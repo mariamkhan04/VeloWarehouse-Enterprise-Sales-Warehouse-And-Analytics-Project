@@ -225,7 +225,9 @@ WITH customer_spending AS (
     GROUP BY c.customer_key
 )
 SELECT customer_segments,
-       COUNT(customer_key) total_customers
+       COUNT(customer_key) total_customers,
+	   sum(total_spending) total_revenue,
+	   round(sum(total_spending)/COUNT(customer_key),2) avg_revenue
 FROM (
     SELECT
         customer_key,
@@ -238,7 +240,7 @@ FROM (
     FROM customer_spending
 ) t
 GROUP BY customer_segments;
--- "New"      14828
--- "Regular"  2037
--- "VIP"      1619
+-- "New"	14828	11794418	795.42
+-- "Regular"	2037	6999831	3436.34
+-- "VIP"	1619	10562001	6523.78
 -- Sums to 18484 — matches total_customers exactly

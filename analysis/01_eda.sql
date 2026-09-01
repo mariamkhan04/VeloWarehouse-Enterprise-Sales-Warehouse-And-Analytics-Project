@@ -89,7 +89,7 @@ FROM gold.dim_customers;
 -- 4. Measures Exploration
 -- ==============================================================================
 
--- Total sales
+-- Total sales/revenue
 SELECT SUM(sales_amount) total_sales
 FROM gold.fact_sales;
 -- 29356250
@@ -275,38 +275,43 @@ ORDER BY total_quantity DESC;
 -- Top 5 products generating the highest revenue
 SELECT *
 FROM (
-    SELECT p.product_name,
+    SELECT p.category,
+		   p.product_line,
+	       p.product_name,
            SUM(f.sales_amount) total_revenue,
            DENSE_RANK() OVER (ORDER BY SUM(f.sales_amount) DESC) AS prod_rank
     FROM gold.fact_sales f
     LEFT JOIN gold.dim_products p
         ON f.product_key = p.product_key
-    GROUP BY p.product_name
+    GROUP BY p.category, p.product_line, p.product_name
 ) ranked_products
 WHERE prod_rank <= 5;
--- "Mountain-200 Black- 46"   1373454  1
--- "Mountain-200 Black- 42"   1363128  2
--- "Mountain-200 Silver- 38"  1339394  3
--- "Mountain-200 Silver- 46"  1301029  4
--- "Mountain-200 Black- 38"   1294854  5
+-- "Bikes"	"Mountain"	"Mountain-200 Black- 46"	1373454	1
+-- "Bikes"	"Mountain"	"Mountain-200 Black- 42"	1363128	2
+-- "Bikes"	"Mountain"	"Mountain-200 Silver- 38"	1339394	3
+-- "Bikes"	"Mountain"	"Mountain-200 Silver- 46"	1301029	4
+-- "Bikes"	"Mountain"	"Mountain-200 Black- 38"	1294854	5
+-- Top 5 products generating highest revenue belongs to Bikes category
 
--- 5 worst-performing products by revenue
+-- 5 bottom-performing products by revenue
 SELECT *
 FROM (
-    SELECT p.product_name,
+    SELECT p.category,
+		   p.product_line,
+		   p.product_name,
            SUM(f.sales_amount) total_revenue,
            DENSE_RANK() OVER (ORDER BY SUM(f.sales_amount)) AS prod_rank
     FROM gold.fact_sales f
     LEFT JOIN gold.dim_products p
         ON f.product_key = p.product_key
-    GROUP BY p.product_name
+    GROUP BY p.category, p.product_line, p.product_name
 ) ranked_products
 WHERE prod_rank <= 5;
--- "Racing Socks- L"       2430  1
--- "Racing Socks- M"       2682  2
--- "Patch Kit/8 Patches"   6382  3
--- "Bike Wash - Dissolver" 7272  4
--- "Touring Tire Tube"     7440  5
+-- "Clothing"	"Road"	"Racing Socks- L"	2430	1
+-- "Clothing"	"Road"	"Racing Socks- M"	2682	2
+-- "Accessories"	"Other Sales"	"Patch Kit/8 Patches"	6382	3
+-- "Accessories"	"Other Sales"	"Bike Wash - Dissolver"	7272	4
+-- "Accessories"	"Touring"	"Touring Tire Tube"	7440	5
 
 -- Top 10 customers who have generated the highest revenue
 SELECT *

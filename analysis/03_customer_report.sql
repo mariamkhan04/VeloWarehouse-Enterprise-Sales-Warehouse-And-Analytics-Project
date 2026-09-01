@@ -109,3 +109,22 @@ CREATE OR REPLACE VIEW gold.report_customers AS
            END AS avg_monthly_spend
     FROM customer_aggregations
 );
+
+-- ==============================================================================
+-- Example Usage: Top customers by revenue (via the view)
+-- ==============================================================================
+-- Demonstrates how gold.report_customers simplifies ranking queries — no joins
+-- needed, since total_sales is already pre-aggregated per customer.
+SELECT *
+FROM (
+    SELECT customer_name,
+           total_sales,
+           customer_segments,
+           DENSE_RANK() OVER (ORDER BY total_sales DESC) rn
+    FROM gold.report_customers
+) t
+WHERE rn <= 3;
+-- "Nichole Nara"	13294	"VIP"	1
+-- "Kaitlyn Henderson"	13294	"VIP"	1
+-- "Margaret He"	13268	"VIP"	2
+-- "Randall Dominguez"	13265	"VIP"	3

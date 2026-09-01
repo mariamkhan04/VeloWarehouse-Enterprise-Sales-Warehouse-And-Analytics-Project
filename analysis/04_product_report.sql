@@ -45,6 +45,7 @@ CREATE OR REPLACE VIEW gold.report_products AS
                p.product_name,
                p.category,
                p.sub_category,
+			   p.product_line,
                p.cost
         FROM gold.fact_sales f
         LEFT JOIN gold.dim_products p
@@ -59,6 +60,7 @@ CREATE OR REPLACE VIEW gold.report_products AS
                product_name,
                category,
                sub_category,
+			   product_line,
                cost,
                (
                    EXTRACT(YEAR FROM AGE(MAX(order_date), MIN(order_date))) * 12
@@ -75,6 +77,7 @@ CREATE OR REPLACE VIEW gold.report_products AS
             product_name,
             category,
             sub_category,
+			product_line,
             cost
     )
     /*---------------------------------------------------------------------------
@@ -86,6 +89,7 @@ CREATE OR REPLACE VIEW gold.report_products AS
         product_name,
         category,
         sub_category,
+		product_line,
         cost,
         last_sale_order,
         lifespan_months,
@@ -114,3 +118,53 @@ CREATE OR REPLACE VIEW gold.report_products AS
         END AS avg_monthly_revenue
     FROM product_aggregations
 );
+
+-- ==============================================================================
+-- Example Usage: Are the lowest-revenue products actually unprofitable?
+-- ==============================================================================
+-- Total revenue alone can be misleading for cheap, low-volume items — a product
+-- can rank "worst by revenue" while still earning healthy profit per unit.
+-- This checks per-unit margin (avg_selling_price - cost) for the bottom 5
+-- revenue products, to see whether low revenue also means low profitability.
+SELECT *
+FROM (
+    SELECT product_name,
+           category,
+           product_line,
+           cost,
+           avg_selling_price,
+           ROUND(avg_selling_price - cost, 2) AS margin_per_unit,
+           total_quantity,
+           total_sales,
+           DENSE_RANK() OVER (ORDER BY total_sales) rn
+    FROM gold.report_products
+) t
+WHERE rn <= 5;
+-- "Racing Socks- L"	"Clothing"	"Road"	3	9.0	6.00	270	2430	1
+-- "Racing Socks- M"	"Clothing"	"Road"	3	9.0	6.00	298	2682	2
+-- "Patch Kit/8 Patches"	"Accessories"	"Other Sales"	1	2.0	1.00	3189	6378	3
+-- "Bike Wash - Dissolver"	"Accessories"	"Other Sales"	3	8.0	5.00	909	7272	4
+-- "Touring Tire Tube"	"Accessories"	"Touring"	2	5.0	3.00	1487	7435	5
+
+-- Same check applied to the top 5 revenue products, for symmetry —
+-- does high revenue also mean high gross margin per unit, or could a
+-- best-seller by revenue still be a comparatively thin-margin item?
+SELECT *
+FROM (
+    SELECT product_name,
+           category,
+           product_line,
+           cost,
+           avg_selling_price,
+           ROUND(avg_selling_price - cost, 2) AS margin_per_unit,
+           total_quantity,
+           total_sales,
+           DENSE_RANK() OVER (ORDER BY total_sales DESC) rn
+    FROM gold.report_products
+) t
+WHERE rn <= 5;
+-- "Mountain-200 Black- 46"	"Bikes"	"Mountain"	1252	2215.2	963.20	620	1373454	1
+-- "Mountain-200 Black- 42"	"Bikes"	"Mountain"	1252	2220.1	968.10	614	1363128	2
+-- "Mountain-200 Silver- 38"	"Bikes"	"Mountain"	1266	2247.3	981.30	596	1339394	3
+-- "Mountain-200 Silver- 46"	"Bikes"	"Mountain"	1266	2243.0	977.00	579	1298709	4
+-- "Mountain-200 Black- 38"	"Bikes"	"Mountain"	1252	2224.7	972.70	581	1292559	5
