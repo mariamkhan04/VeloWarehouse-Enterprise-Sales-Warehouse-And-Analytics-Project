@@ -165,6 +165,43 @@ FROM gold.dim_customers;
 -- "Total Products"       295
 -- "Total Customers"      18484
 
+-- Generate a report showing all key business metrics in one result set (Filtered)
+SELECT 'Total Sales' AS measure_name,
+       SUM(sales_amount) AS measure_value
+FROM gold.fact_sales
+where order_date is not null
+UNION ALL
+SELECT 'Total Quantity Sold',
+       SUM(quantity)
+FROM gold.fact_sales
+where order_date is not null
+UNION ALL
+SELECT 'Avg Selling Price',
+       ROUND(AVG(price), 2)
+FROM gold.fact_sales
+where order_date is not null
+UNION ALL
+SELECT 'Total Orders',
+       COUNT(DISTINCT order_number)
+FROM gold.fact_sales
+where order_date is not null
+UNION ALL
+SELECT 'Total Products',
+       COUNT(DISTINCT product_name)
+FROM gold.dim_products
+UNION ALL
+SELECT 'Total Customers', COUNT(DISTINCT c.customer_key) 
+FROM gold.dim_customers c
+JOIN gold.fact_sales f ON f.customer_key = c.customer_key
+WHERE f.order_date IS NOT NULL;
+
+-- "Total Sales"	29351258
+-- "Total Quantity Sold"	60404
+-- "Avg Selling Price"	486.11
+-- "Total Orders"	27657
+-- "Total Products"	295
+-- "Total Customers"	18482
+
 -- ==============================================================================
 -- 5. Magnitude Analysis
 -- ==============================================================================

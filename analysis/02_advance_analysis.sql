@@ -244,3 +244,38 @@ GROUP BY customer_segments;
 -- "Regular"	2037	6999831	3436.34
 -- "VIP"	1619	10562001	6523.78
 -- Sums to 18484 — matches total_customers exactly
+
+WITH customer_spending AS (
+    SELECT c.customer_key,
+           SUM(f.sales_amount) total_spending,
+           MAX(f.order_date) latest_order,
+           MIN(f.order_date) first_order,
+           (
+               EXTRACT(YEAR FROM AGE(MAX(f.order_date), MIN(f.order_date))) * 12
+               + EXTRACT(MONTH FROM AGE(MAX(f.order_date), MIN(f.order_date)))
+           ) AS lifespan_months
+    FROM gold.fact_sales f
+    LEFT JOIN gold.dim_customers c
+        ON f.customer_key = c.customer_key
+	WHERE f.order_date IS NOT NULL
+    GROUP BY c.customer_key
+)
+SELECT customer_segments,
+       COUNT(customer_key) total_customers,
+	   sum(total_spending) total_revenue,
+	   round(sum(total_spending)/COUNT(customer_key),2) avg_revenue
+FROM (
+    SELECT
+        customer_key,
+        total_spending,
+        lifespan_months,
+        CASE WHEN lifespan_months >= 12 AND total_spending > 5000 THEN 'VIP'
+             WHEN lifespan_months >= 12 AND total_spending <= 5000 THEN 'Regular'
+             ELSE 'New'
+        END customer_segments
+    FROM customer_spending
+) t
+GROUP BY customer_segments;
+-- "New"	14826	11794065	795.50
+-- "Regular"	2039	7008044	3437.00
+-- "VIP"	1617	10549149	6523.90
