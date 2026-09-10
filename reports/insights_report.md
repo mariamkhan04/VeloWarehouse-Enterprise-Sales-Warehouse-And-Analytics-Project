@@ -46,11 +46,12 @@ high-volume, low-value. This is the category responsible for the average-price d
 [Quality Checks Overall - To Verify](/tests/04_quality_checks_overall.sql)
 
 - **Referential integrity is clean:** every row in fact_sales successfully joins to both dim_customers and dim_products, no orphaned foreign keys.
-- A small number of sales rows (**~4,992** in value) have unparseable order dates and are excluded from all time-based reporting.
+- A small number of sales rows (**19** order lines, **15** unique orders, affecting **15** customers and **15** products, totaling **$4,992** in value) have unparseable order dates and are excluded from all time-based reporting. Interestingly, these 15 order numbers are not exclusively tied to unfiltered results, some overlap with orders that also have valid-dated lines, meaning total_orders counted with DISTINCT order_number differs by only **2 (not 15)** between filtered and unfiltered totals, since a few affected orders still appear via their other, correctly-dated lines.
 - **337 customers (1.8%)** have unknown country, and **15 customers (0.08%)** have unresolved gender, both remain as 'n/a' after all standardization/fallback logic was applied.
 - **7 products (2.4% of the catalog)** have no category assigned, due to their category code not matching any entry in the ERP category reference data, these are excluded from category-level breakdowns.
 - **2 products had null/negative cost in the raw source**, defaulted to **0** during cleaning, **margin calculations for these 2 specific products should not be trusted at face value**.
 - A small number of ERP birthdates were future-dated in the raw source and were nulled out rather than corrected, age/birth_date is missing (not wrong) for those customers.
+- **Dashboard vs. report discrepancy note:** The Excel dashboard (built on the filtered dataset, order_date IS NOT NULL) shows slightly different segment counts than this report's original figures (14,826/2,039/1,617 vs. 14,828/2,037/1,619). This stems from two combined, expected sources: (1) 2 customers whose only orders have a null date drop out entirely once filtered, and (2) a handful of customers sit exactly at the 12-month VIP/Regular boundary, where Excel's DAX date calculation and SQL's AGE()-based calculation round slightly differently at that exact edge. Combined effect is under 0.03% of the customer base and does not change any conclusion in this report.
 
 ---
 
