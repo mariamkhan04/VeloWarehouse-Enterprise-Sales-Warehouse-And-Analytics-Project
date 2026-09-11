@@ -2,7 +2,8 @@
 
 An end-to-end data engineering and analytics project: raw CRM/ERP data → PostgreSQL data warehouse (medallion architecture) → SQL analytics → interactive Excel dashboard.
 
-**[Interactive dashboard Video](docs/dashboard%20screenshots%20and%20video/velowarehouse.mp4)**
+**[Interactive Dashboard Video](docs/dashboard%20screenshots%20and%20video/velowarehouse.mp4)**
+<video src="docs/dashboard%20screenshots%20and%20video/velowarehouse.mp4" controls width="100%"></video>
 
 ---
 
