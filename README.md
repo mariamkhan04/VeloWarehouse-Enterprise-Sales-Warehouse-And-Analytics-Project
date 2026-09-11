@@ -62,7 +62,7 @@ Three pages, built on a live Power Pivot data model connected directly to Postgr
 
 | Page | Focus |
 |---|---|
-| **Performance Overview** | Revenue trend, category revenue/volume mirror comparison, quarterly and monthly seasonality, top 5 products |
+| **Performance Overview** | Revenue trend, category revenue/volume mirror comparison, quarterly and monthly seasonality|
 | **Customer Insights** | Segment concentration (New/Regular/VIP), average revenue per segment, top customers, geographic distribution |
 | **Product Insights** | Category and cost-range breakdown, top/bottom 5 products by revenue with margin analysis |
 
@@ -136,7 +136,7 @@ VeloWarehouse/
 
 ## Ownership & Credits
 
-Built independently by [Your Name] as an end-to-end portfolio project. The initial data warehouse structure follows [Data With Baraa's SQL Data Warehouse & Analytics project](https://github.com/DataWithBaraa/sql-data-warehouse-project) as a structural reference; all implementation was rebuilt in PostgreSQL (from the tutorial's SQL Server), independently translated, debugged, and extended with original data quality investigation, an independently designed star schema and naming conventions, an original insights report, and a fully custom Excel dashboard built on a self-designed data model.
+Built independently by **Mariam Khan** as an end-to-end portfolio project. The initial data warehouse structure follows [Data With Baraa's SQL Data Warehouse & Analytics project](https://github.com/DataWithBaraa/sql-data-warehouse-project) as a structural reference; all implementation was rebuilt in PostgreSQL (from the tutorial's SQL Server), independently translated, debugged, and extended with original data quality investigation, an independently designed star schema and naming conventions, an original insights report, and a fully custom Excel dashboard built on a self-designed data model.
 
 ## Connect
 
