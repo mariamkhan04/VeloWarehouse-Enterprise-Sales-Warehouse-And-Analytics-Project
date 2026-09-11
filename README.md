@@ -3,7 +3,7 @@
 An end-to-end data engineering and analytics project: raw CRM/ERP data → PostgreSQL data warehouse (medallion architecture) → SQL analytics → interactive Excel dashboard.
 
 **[Interactive Dashboard Video](docs/dashboard%20screenshots%20and%20video/velowarehouse.mp4)**
-<video src="docs/dashboard%20screenshots%20and%20video/velowarehouse.mp4" controls width="100%"></video>
+<video src="https://github.com/user-attachments/assets/e57909bf-71b9-4fb8-88b2-6a4c0096d5c0" controls width="100%"></video>
 
 ---
 
